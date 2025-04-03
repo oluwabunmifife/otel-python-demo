@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: otel-collector
-          image: otel/opentelemetry-collector:latestd
+          image: otel/opentelemetry-collector:latest
           ports:
             - containerPort: 4317 # OTLP gRPC
             - containerPort: 55681 # Prometheus metrics
