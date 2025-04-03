@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: otel-collector-config
+  namespace: default
+data:
+  otel-collector-config.yaml: |
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+          http
+
+    processors:
+      batch: {}
+      resource:
+        attributes:
+          - key: namespace
+            from_attribute: k8s.namespace.name
+            action: insert
+
+    exporters:
+      otlp:
+        endpoint: "otel-collector.default.svc.cluster.local:4317"
+      prometheus:
+        endpoint: "0.0.0.0:9090"
+
+    service:
+      pipelines:
+        traces:
+          receivers: [otlp]
+          processors: [batch, resource]
+          exporters: [otlp]
+        metrics:
+          receivers: [otlp]
+          processors: [batch, resource]
+          exporters: [prometheus]

@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: otel-python-app
+  namespace: tenant-b
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: otel-python-app
+  template:
+    metadata:
+      labels:
+        app: otel-python-app
+    spec:
+      containers:
+      - name: otel-python-app
+        image: fifss/otel-python-demo:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: OTEL_EXPORTER_OTLP_ENDPOINT
+          value: "http://otel-collector.monitoring:4317"
