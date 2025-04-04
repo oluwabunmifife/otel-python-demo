@@ -5,16 +5,20 @@ from opentelemetry.instrumentation.flask import FlaskInstrumentor
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
+from opentelemetry import trace
 
-# Set up logging
 logging.basicConfig(level=logging.INFO)
 
-# Initialize OpenTelemetry
 trace_provider = TracerProvider()
-trace_provider.add_span_processor(BatchSpanProcessor(OTLPSpanExporter(endpoint="http://otel-collector.monitoring:4317")))
-FlaskInstrumentor().instrument()
+trace.set_tracer_provider(trace_provider)
+
+otlp_exporter = OTLPSpanExporter(endpoint="http://otel-collector.monitoring:4317", insecure=True)
+span_processor = BatchSpanProcessor(otlp_exporter)
+trace_provider.add_span_processor(span_processor)
+
 
 app = Flask(__name__)
+FlaskInstrumentor().instrument_app(app)
 
 @app.route("/")
 def hello():

@@ -10,6 +10,10 @@ data:
         protocols:
           grpc:
           http
+      k8s_metadata:
+        api:
+          endpoint: "https://kubernetes.default.svc"
+        use_k8s_annotations: true
 
     processors:
       batch: {}
@@ -28,7 +32,7 @@ data:
     service:
       pipelines:
         traces:
-          receivers: [otlp]
+          receivers: [otlp, k8s_metadata]
           processors: [batch, resource]
           exporters: [otlp]
         metrics:
